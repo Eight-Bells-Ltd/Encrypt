@@ -1,0 +1,38 @@
+FROM gramineproject/gramine:v1.5
+
+RUN apt update && apt install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa && apt-get upgrade -y
+RUN apt install -y python3.9 python3.9-dev make && apt install -y python3-pip
+RUN gramine-sgx-gen-private-key
+
+ENV PPT="dp"
+# Common folder
+ENV PPT_DIR="/dp-fintech"
+# Folder that contains the computation script and resources
+ENV SRC_DIR="${PPT_DIR}/dp_fintech_training" 
+# File where we save the compuation result
+ENV RESULT_FILE="${SRC_DIR}/output.txt" 
+# File where we save the compuation ID
+ENV COMPUTATION_ID_FILE="${SRC_DIR}/computation_ID.txt"
+# Folder where we save the upladed files
+ENV DATA_DIR="${SRC_DIR}/data"
+
+COPY ../..${PPT_DIR} ${PPT_DIR}
+
+RUN python3.9 -m pip install -r "${PPT_DIR}/requirements.txt"
+RUN python3.9 -m pip install -r "${SRC_DIR}/requirements.txt"
+
+RUN mkdir ${DATA_DIR}
+#RUN touch ${RESULT_FILE} ${COMPUTATION_ID_FILE}
+
+WORKDIR ${SRC_DIR}
+# make per creazione manifest di gramine
+RUN make SGX=1
+
+WORKDIR ${PPT_DIR}
+# make per creazione manifest di gramine
+RUN make SGX=1
+
+EXPOSE 9443
+
+CMD ["python3 wrapper.py"]
+
