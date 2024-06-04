@@ -1,6 +1,6 @@
-import pickle
+import pickle, os
 from pathlib import Path
-
+from loguru import logger
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
@@ -11,8 +11,17 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-DIRECTORY = Path("./data")
 
+src_dir = os.getenv('SRC_DIR')
+data_dir = os.getenv ('DATA_DIR')                       
+# Folder for data that will be upload 
+DIRECTORY = Path(data_dir)
+# path to the uploads DATA_FOLDER
+#DIRECTORY = Path("./data")
+
+# Accuracy and model file path
+accuracy_file = os.getenv('RESULT_FILE')
+model_file = f"{src_dir}/model.pkl"
 
 def read_in_files():
     map = (
@@ -172,6 +181,7 @@ def write_accuracy_to_file(rf, X_test, y_test):
         logger.error("Could not open/read file: accuracy.txt")
 
 if __name__ == "__main__":
+    print("HELLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
     accounts, deposits, payments, persons = read_in_files()
     accounts, deposits, payments, persons = clean_files(
         accounts, deposits, payments, persons

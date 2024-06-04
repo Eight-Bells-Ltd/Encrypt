@@ -39,6 +39,7 @@ def start_computation():
 
     # Execute the script
     print ('========Executing the computation!========\n')
+    print(commands)
     result = subprocess.run(commands, stdout=subprocess.PIPE)
     # Extract stdout
     stdout = result.stdout.decode('utf-8')
@@ -64,7 +65,7 @@ def send_to_api():
     else:
         print(f'POST request failed with status code: {response.status_code}')
     sys.exit()    
-    #os.kill(os.getpid(), signal.SIGINT)
+    os.kill(os.getpid(), signal.SIGINT)
 
 
 if __name__ == '__main__':
